@@ -24,13 +24,13 @@
 	return self;
 }
 
-- (void)setThemeState:(CPThemeState)aState
+- (void)setThemeState:(ThemeState)aState
 {
     [super setThemeState:aState];
     [nameField setThemeState:aState];
 }
 
-- (void)unsetThemeState:(CPThemeState)aState
+- (void)unsetThemeState:(ThemeState)aState
 {
     [super unsetThemeState:aState];
     [nameField unsetThemeState:aState];
@@ -44,10 +44,10 @@
 	self = [super initWithCoder:aCoder];
 	nameField = [aCoder decodeObjectForKey:"nameField"];
 
-	var fileDropUploadController = [[DCFileDropController alloc] 
+	var fileDropUploadController = [[DCFileDropController alloc]
 		initWithView:self
-		dropDelegate:self 
-		uploadURL:[CPURL URLWithString:@"upload.php"] 
+		dropDelegate:self
+		uploadURL:[CPURL URLWithString:@"upload.php"]
 		uploadManager:[DCFileUploadManager sharedManager]];
 
 	return self;

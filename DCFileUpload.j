@@ -1,14 +1,5 @@
 @import <AppKit/CPPanel.j>
 
-/*
-
-DCFileUploadDelegate protocol
-- (void)fileUploadDidBegin:(DCFileUpload)theController;
-- (void)fileUploadProgressDidChange:(DCFileUpload)theController;
-- (void)fileUploadDidEnd:(DCFileUpload)theController;
-
-*/
-
 @implementation DCFileUpload : CPObject {
 	CPString name @accessors;
 	float progress @accessors;
@@ -20,7 +11,8 @@ DCFileUploadDelegate protocol
 	BOOL isUploading;
 }
 
-- (id)initWithFile:(id)theFile {
+- (id)initWithFile:(id)theFile
+{
 	self = [super init];
 	file = theFile;
 	progress = 0.0;
@@ -28,34 +20,36 @@ DCFileUploadDelegate protocol
 	return self;
 }
 
-- (void)begin {
+- (void)begin
+{
 	[self processXHR];
 }
 
-- (void)processXHR {
+- (void)processXHR
+{
 	xhr = new XMLHttpRequest();
-
 	var fileUpload = xhr.upload;
-	
+
 	fileUpload.addEventListener("progress", function(event) {
 		if (event.lengthComputable) {
 			[self setProgress:event.loaded / event.total];
 			[self fileUploadProgressDidChange];
 		}
 	}, false);
-	
+
 	fileUpload.addEventListener("load", function(event) {
 		[self fileUploadDidEnd];
 	}, false);
-	
+
 	fileUpload.addEventListener("error", function(evt) {
-		CPLog("error: " + evt.code);
+		[self fileUploadDidReceiveError:evt.code];
 	}, false);
 
-    xhr.addEventListener("load", function(evt) {
-        if (xhr.responseText)
-            [self fileUploadDidReceiveResponse:xhr.responseText];
-    }, NO);
+  xhr.addEventListener("load", function(evt) {
+    if (xhr.responseText) {
+      [self fileUploadDidReceiveResponse:xhr.responseText];
+    }
+  }, false);
 
 	xhr.open("POST", [uploadURL absoluteURL]);
 	xhr.setRequestHeader("If-Modified-Since", "Mon, 26 Jul 1997 05:00:00 GMT");
@@ -69,37 +63,53 @@ DCFileUploadDelegate protocol
 	[self fileUploadDidBegin];
 };
 
-- (void)fileUploadDidBegin {
+- (void)fileUploadDidBegin
+{
 	isUploading = YES;
 	if ([delegate respondsToSelector:@selector(fileUploadDidBegin:)]) {
 		[delegate fileUploadDidBegin:self];
 	}
 }
 
-- (void)fileUploadProgressDidChange {
+- (void)fileUploadProgressDidChange
+{
 	isUploading = YES;
 	if ([delegate respondsToSelector:@selector(fileUploadProgressDidChange:)]) {
 		[delegate fileUploadProgressDidChange:self];
 	}
 }
 
-- (void)fileUploadDidEnd{
+- (void)fileUploadDidEnd
+{
 	isUploading = NO;
-	if ([delegate respondsToSelector:@selector(fileUploadDidEnd:)])
+	if ([delegate respondsToSelector:@selector(fileUploadDidEnd:)]) {
 		[delegate fileUploadDidEnd:self];
+	}
+}
+
+- (void)fileUploadDidReceiveError:(CPInteger)aStatusCode
+{
+	isUploading = NO;
+  if ([delegate respondsToSelector:@selector(fileUpload:didReceiveError:)]) {
+		[delegate fileUpload:self didReceiveError:aStatusCode];
+  }
 }
 
 - (void)fileUploadDidReceiveResponse:(CPString)aResponse
 {
-    if ([delegate respondsToSelector:@selector(fileUpload:didReceiveResponse:)])
+	isUploading = NO;
+  if ([delegate respondsToSelector:@selector(fileUpload:didReceiveResponse:)]) {
 		[delegate fileUpload:self didReceiveResponse:aResponse];
+  }
 }
 
-- (BOOL)isUploading {
+- (BOOL)isUploading
+{
 	return isUploading;
 }
 
-- (void)cancel {
+- (void)cancel
+{
 	isUploading = NO;
 	xhr.abort();
 }

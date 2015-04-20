@@ -1,5 +1,3 @@
-@import <AppKit/CPPanel.j>
-
 @implementation DCFileUpload : CPObject {
 	CPString name @accessors;
 	float progress @accessors;

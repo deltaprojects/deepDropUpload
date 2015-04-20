@@ -1,5 +1,3 @@
-@import <AppKit/CPPanel.j>
-
 /*
 
 DCFileDropControllerDropDelegate protocol
@@ -71,10 +69,10 @@ if (navigator) {
 	dragExitEventImplementation = class_getMethodImplementation(theClass, @selector(fileDraggingExited:));
 	dragExitEventCallback = function (anEvent) { dragExitEventImplementation(self, nil, anEvent); };
 
-  // this prevents the little plus sign from showing up when you drag over the body.
-  // Otherwise the user could be confused where they can drop the file and it would
-  // cause the browser to redirect to the file they just dropped.
-  window.document.body.addEventListener("dragover", bodyBlockCallback, NO);
+    // this prevents the little plus sign from showing up when you drag over the body.
+    // Otherwise the user could be confused where they can drop the file and it would
+    // cause the browser to redirect to the file they just dropped.
+    window.document.body.addEventListener("dragover", bodyBlockCallback, NO);
 
 	view._DOMElement.addEventListener("dragenter", dragEnterEventCallback, NO);
 
@@ -223,15 +221,18 @@ if (navigator) {
 
 	var files = sender.target.files;
 	for(var i = 0, len = files.length; i < len; i++) {
-		if ([uploadManager respondsToSelector:@selector(fileUploadWithFile:uploadURL:)]) {
+		if ([uploadManager respondsToSelector:@selector(fileUploadWithFile:uploadURL:)])
+        {
 			var upload = [uploadManager fileUploadWithFile:files[i] uploadURL:uploadURL];
-      if ([dropDelegate respondsToSelector:@selector(fileDropController:didBeginUpload:)]) {
-				[dropDelegate fileDropController:self didBeginUpload:upload];
-      }
-    }
+
+            if ([dropDelegate respondsToSelector:@selector(fileDropController:didBeginUpload:)])
+                [dropDelegate fileDropController:self didBeginUpload:upload];
+        }
+
 	}
-  // now clear the input
-  fileInput.value = nil;
+
+    // now clear the input
+    fileInput.value = nil;
 }
 
 @end

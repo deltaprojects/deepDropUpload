@@ -1,4 +1,3 @@
-@import <AppKit/CPPanel.j>
 @import "DCFileUpload.j"
 
 /*
